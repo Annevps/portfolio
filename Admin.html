@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Área restrita</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <a class="home" href="index.html">Home</a>
+  </header>
+  <main>
+    <h1>Área restrita</h1>
+
+    <section id="login">
+      <label for="email">E-mail</label>
+      <input id="email" type="email" autocomplete="username">
+      <label for="senha">Senha</label>
+      <input id="senha" type="password" autocomplete="current-password">
+      <button id="entrar">Entrar</button>
+    </section>
+
+    <section id="painel" hidden>
+      <p>Você está conectada ao Supabase como <strong id="usuario"></strong>.</p>
+      <button id="sair" class="secundario" style="margin-left:0">Sair</button>
+    </section>
+
+    <p id="mensagem" role="status"></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function mostrar(sessao) {
+      $("login").hidden = !!sessao;
+      $("painel").hidden = !sessao;
+      if (sessao) $("usuario").textContent = sessao.user.email;
+    }
+
+    $("entrar").addEventListener("click", async () => {
+      $("mensagem").className = "";
+      $("mensagem").textContent = "Entrando...";
+      const { data, error } = await banco.auth.signInWithPassword({
+        email: $("email").value,
+        password: $("senha").value,
+      });
+      if (error) {
+        $("mensagem").className = "erro";
+        $("mensagem").textContent = "Não deu certo: " + error.message;
+        return;
+      }
+      $("mensagem").className = "ok";
+      $("mensagem").textContent = "Conexão com o banco funcionando.";
+      mostrar(data.session);
+    });
+
+    $("sair").addEventListener("click", async () => {
+      await banco.auth.signOut();
+      $("mensagem").textContent = "";
+      mostrar(null);
+    });
+
+    banco.auth.getSession().then(({ data }) => mostrar(data.session));
+  </script>
+</body>
+</html>
