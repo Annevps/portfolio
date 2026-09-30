@@ -10,10 +10,10 @@
   <header>
     <a class="home" href="index.html">Home</a>
   </header>
-  <main>
+  <main class="larga">
     <h1>Área restrita</h1>
 
-    <section id="login">
+    <section id="login" style="max-width:26rem">
       <label for="email">E-mail</label>
       <input id="email" type="email" autocomplete="username">
       <label for="senha">Senha</label>
@@ -22,45 +22,177 @@
     </section>
 
     <section id="painel" hidden>
-      <p>Você está conectada ao Supabase como <strong id="usuario"></strong>.</p>
-      <button id="sair" class="secundario" style="margin-left:0">Sair</button>
+      <p>Conectada como <strong id="usuario"></strong>
+        <button id="sair" class="secundario" style="margin:0 0 0 .75rem">Sair</button></p>
+
+      <nav class="abas">
+        <button data-aba="projects" class="ativa">Projetos</button>
+        <button data-aba="leads">Mensagens</button>
+      </nav>
+
+      <div id="aba-projects">
+        <label for="p-title">Título</label>
+        <input id="p-title">
+        <label for="p-category">Categoria</label>
+        <input id="p-category">
+        <label for="p-description">Descrição</label>
+        <textarea id="p-description"></textarea>
+        <label for="p-image">Link da imagem (opcional)</label>
+        <input id="p-image">
+        <label for="p-url">Link do projeto</label>
+        <input id="p-url">
+        <button id="salvar">Salvar projeto</button>
+        <button id="cancelar" class="secundario" hidden>Cancelar edição</button>
+
+        <div class="tabela">
+          <table>
+            <thead><tr><th>Título</th><th>Categoria</th><th></th></tr></thead>
+            <tbody id="lista-projects"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="aba-leads" hidden>
+        <div class="tabela">
+          <table>
+            <thead><tr><th>Nome</th><th>E-mail</th><th>Assunto</th><th>Mensagem</th><th>Data</th><th></th></tr></thead>
+            <tbody id="lista-leads"></tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
     <p id="mensagem" role="status"></p>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="Supabase.js"></script>
+  <script src="supabase.js"></script>
   <script>
     const $ = (id) => document.getElementById(id);
+    // Protege a página: textos vindos do banco nunca viram código HTML.
+    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const aviso = (txt, erro) => { $("mensagem").className = erro ? "erro" : "ok"; $("mensagem").textContent = txt; };
+    const SEM_PERMISSAO = "Nada foi alterado. Provavelmente falta uma policy (RLS) no Supabase.";
 
+    let projetos = [];
+    let editandoId = null;
+
+    // ---------- login ----------
     function mostrar(sessao) {
       $("login").hidden = !!sessao;
       $("painel").hidden = !sessao;
-      if (sessao) $("usuario").textContent = sessao.user.email;
+      if (sessao) {
+        $("usuario").textContent = sessao.user.email;
+        carregarProjetos();
+        carregarLeads();
+      }
     }
 
     $("entrar").addEventListener("click", async () => {
-      $("mensagem").className = "";
-      $("mensagem").textContent = "Entrando...";
+      aviso("Entrando...");
       const { data, error } = await banco.auth.signInWithPassword({
-        email: $("email").value,
-        password: $("senha").value,
+        email: $("email").value, password: $("senha").value,
       });
-      if (error) {
-        $("mensagem").className = "erro";
-        $("mensagem").textContent = "Não deu certo: " + error.message;
-        return;
-      }
-      $("mensagem").className = "ok";
-      $("mensagem").textContent = "Conexão com o banco funcionando.";
+      if (error) return aviso("Não deu certo: " + error.message, true);
+      aviso("");
       mostrar(data.session);
     });
 
     $("sair").addEventListener("click", async () => {
       await banco.auth.signOut();
-      $("mensagem").textContent = "";
+      aviso("");
       mostrar(null);
+    });
+
+    // ---------- abas ----------
+    document.querySelectorAll(".abas button").forEach((b) => b.addEventListener("click", () => {
+      document.querySelectorAll(".abas button").forEach((x) => x.classList.toggle("ativa", x === b));
+      $("aba-projects").hidden = b.dataset.aba !== "projects";
+      $("aba-leads").hidden = b.dataset.aba !== "leads";
+      aviso("");
+    }));
+
+    // ---------- projetos ----------
+    async function carregarProjetos() {
+      const { data, error } = await banco.from("projects").select("*").order("created_at", { ascending: false });
+      if (error) return aviso("Erro ao ler projetos: " + error.message, true);
+      projetos = data;
+      $("lista-projects").innerHTML = data.length
+        ? data.map((p) => `<tr><td>${esc(p.title)}</td><td>${esc(p.category)}</td>
+            <td class="acoes"><button class="secundario" data-editar="${p.id}">Editar</button>
+            <button class="secundario" data-excluir="${p.id}">Excluir</button></td></tr>`).join("")
+        : `<tr><td colspan="3">Nenhum projeto ainda. Preencha o formulário acima.</td></tr>`;
+    }
+
+    function limparFormulario() {
+      ["p-title", "p-category", "p-description", "p-image", "p-url"].forEach((id) => ($(id).value = ""));
+      editandoId = null;
+      $("salvar").textContent = "Salvar projeto";
+      $("cancelar").hidden = true;
+    }
+
+    $("cancelar").addEventListener("click", limparFormulario);
+
+    $("salvar").addEventListener("click", async () => {
+      const dados = {
+        title: $("p-title").value, category: $("p-category").value,
+        description: $("p-description").value, image_url: $("p-image").value || null,
+        project_url: $("p-url").value,
+      };
+      const consulta = editandoId
+        ? banco.from("projects").update(dados).eq("id", editandoId).select()
+        : banco.from("projects").insert(dados).select();
+      const { data, error } = await consulta;
+      if (error) return aviso("Erro ao salvar: " + error.message, true);
+      if (!data.length) return aviso(SEM_PERMISSAO, true);
+      aviso(editandoId ? "Projeto atualizado." : "Projeto salvo.");
+      limparFormulario();
+      carregarProjetos();
+    });
+
+    $("lista-projects").addEventListener("click", async (e) => {
+      const idEditar = e.target.dataset.editar;
+      const idExcluir = e.target.dataset.excluir;
+      if (idEditar) {
+        const p = projetos.find((x) => x.id == idEditar);
+        $("p-title").value = p.title; $("p-category").value = p.category;
+        $("p-description").value = p.description; $("p-image").value = p.image_url || "";
+        $("p-url").value = p.project_url;
+        editandoId = p.id;
+        $("salvar").textContent = "Atualizar projeto";
+        $("cancelar").hidden = false;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      if (idExcluir && confirm("Excluir este projeto?")) {
+        const { data, error } = await banco.from("projects").delete().eq("id", idExcluir).select();
+        if (error) return aviso("Erro ao excluir: " + error.message, true);
+        if (!data.length) return aviso(SEM_PERMISSAO, true);
+        aviso("Projeto excluído.");
+        carregarProjetos();
+      }
+    });
+
+    // ---------- mensagens (leads) ----------
+    async function carregarLeads() {
+      const { data, error } = await banco.from("leads").select("*").order("created_at", { ascending: false });
+      if (error) return aviso("Erro ao ler mensagens: " + error.message, true);
+      $("lista-leads").innerHTML = data.length
+        ? data.map((l) => `<tr><td>${esc(l.name)}</td><td>${esc(l.email)}</td><td>${esc(l.subject)}</td>
+            <td>${esc(l.message)}</td><td>${esc(new Date(l.created_at).toLocaleDateString("pt-BR"))}</td>
+            <td class="acoes"><button class="secundario" data-excluir="${l.id}">Excluir</button></td></tr>`).join("")
+        : `<tr><td colspan="6">Nenhuma mensagem recebida ainda.</td></tr>`;
+    }
+
+    $("lista-leads").addEventListener("click", async (e) => {
+      const id = e.target.dataset.excluir;
+      if (id && confirm("Excluir esta mensagem?")) {
+        const { data, error } = await banco.from("leads").delete().eq("id", id).select();
+        if (error) return aviso("Erro ao excluir: " + error.message, true);
+        if (!data.length) return aviso(SEM_PERMISSAO, true);
+        aviso("Mensagem excluída.");
+        carregarLeads();
+      }
     });
 
     banco.auth.getSession().then(({ data }) => mostrar(data.session));
