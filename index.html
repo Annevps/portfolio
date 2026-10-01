@@ -1,21 +1,40 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Meu portfólio</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Portfólio de Anne Vitória, estudante de Tecnologia da Informação com interesse em programação e desenvolvimento web." />
+  <title>Início | Anne Vitória</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header>
-    <a class="home" href="index.html">Home</a>
-    <a class="cadeado" href="Admin.html" aria-label="Área restrita" title="Área restrita">
-      <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-    </a>
+    <div class="wrap bar">
+      <a href="index.html" class="logo" aria-label="Página inicial"><b>AV</b><span>Anne Vitória</span></a>
+      <button class="burger" id="burger" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav">☰</button>
+      <nav id="nav" aria-label="Navegação principal"><ul><li><a href="index.html" class="on" aria-current="page">Home</a></li><li><a href="sobre.html">Quem sou eu</a></li><li><a href="portfolio.html">Portfólio</a></li><li><a href="contato.html">Contato</a></li></ul></nav>
+    </div>
   </header>
   <main>
-    <h1>Meu portfólio está em construção.</h1>
-    <p>Por enquanto esta é só a página inicial. Em breve, mais coisas por aqui.</p>
+    <section class="hero"><div class="wrap">
+      <div class="photo in"><img src="anne-vitoria.png" alt="Retrato de Anne Vitória" /></div>
+      <div>
+        <p class="tag in" style="animation-delay:.05s">Estudante de TI</p>
+        <h1 class="in" style="animation-delay:.12s">Anne <span>Vitória</span></h1>
+        <p class="lead in" style="animation-delay:.2s">"Construindo meu futuro através da tecnologia."</p>
+        <p class="d in" style="animation-delay:.28s">Estudo Tecnologia da Informação junto ao Ensino Médio. Meu maior interesse é programação e desenvolvimento web, e estou sempre aprendendo e criando novos projetos.</p>
+        <div class="actions in" style="animation-delay:.36s">
+          <a href="portfolio.html" class="btn gold">Ver meu portfólio</a>
+          <a href="contato.html" class="btn line">Entrar em contato</a>
+        </div>
+        <div class="chips in" style="animation-delay:.44s" aria-label="Tecnologias estudadas">
+          <span>HTML</span><span>CSS</span><span>JavaScript</span><span>Git</span><span>GitHub</span><span>SQL</span><span>Supabase</span>
+        </div>
+      </div>
+    </div></section>
   </main>
+  <footer><div class="wrap"><span>© 2026 Anne Vitória — Estudante de TI</span><span>Feito com HTML, CSS, JavaScript e Supabase</span></div></footer>
+  <script src="app.js"></script>
 </body>
 </html>
