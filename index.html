@@ -1,40 +1,192 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Portfólio de Anne Vitória, estudante de Tecnologia da Informação com interesse em programação e desenvolvimento web." />
-  <title>Início | Anne Vitória</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Início · Anne</title>
+    <meta name="description" content="Portfólio de Anne: desenvolvimento web, SEO e GEO.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-  <header>
-    <div class="wrap bar">
-      <a href="index.html" class="logo" aria-label="Página inicial"><b>AV</b><span>Anne Vitória</span></a>
-      <button class="burger" id="burger" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav">☰</button>
-      <nav id="nav" aria-label="Navegação principal"><ul><li><a href="index.html" class="on" aria-current="page">Home</a></li><li><a href="sobre.html">Quem sou eu</a></li><li><a href="portfolio.html">Portfólio</a></li><li><a href="contato.html">Contato</a></li></ul></nav>
-    </div>
-  </header>
-  <main>
-    <section class="hero"><div class="wrap">
-      <div class="photo in"><img src="anne-vitoria.png" alt="Retrato de Anne Vitória" /></div>
-      <div>
-        <p class="tag in" style="animation-delay:.05s">Estudante de TI</p>
-        <h1 class="in" style="animation-delay:.12s">Anne <span>Vitória</span></h1>
-        <p class="lead in" style="animation-delay:.2s">"Construindo meu futuro através da tecnologia."</p>
-        <p class="d in" style="animation-delay:.28s">Estudo Tecnologia da Informação junto ao Ensino Médio. Meu maior interesse é programação e desenvolvimento web, e estou sempre aprendendo e criando novos projetos.</p>
-        <div class="actions in" style="animation-delay:.36s">
-          <a href="portfolio.html" class="btn gold">Ver meu portfólio</a>
-          <a href="contato.html" class="btn line">Entrar em contato</a>
+    <header>
+        <div class="wrap nav">
+            <a class="logo" href="index.html">anne<span>.dev</span></a>
+            <nav class="links"><a href="index.html" class=on>Início</a><a href="sobre.html">Sobre</a><a
+                    href="habilidades.html">Habilidades</a><a href="projetos.html">Projetos</a><a
+                    href="contato.html">Contato</a></nav>
+            <button class="burger" aria-label="Menu">☰</button>
         </div>
-        <div class="chips in" style="animation-delay:.44s" aria-label="Tecnologias estudadas">
-          <span>HTML</span><span>CSS</span><span>JavaScript</span><span>Git</span><span>GitHub</span><span>SQL</span><span>Supabase</span>
+    </header>
+    <main>
+        <div class="wrap hero">
+            <div>
+                <div class="tag">// olá, mundo — eu sou a Anne</div>
+                <h1>Eu construo <span class="grad">experiências digitais</span> que o Google e as pessoas entendem.</h1>
+                <p class="lead">Desenvolvimento web, SEO e GEO em um só lugar: sites bonitos por fora, organizados por
+                    dentro e prontos para serem encontrados.</p>
+                <div class="cta"><a class="btn pri" href="projetos.html">Ver projetos →</a><a class="btn"
+                        href="contato.html">Falar comigo</a></div>
+            </div>
+            <div class="photo"><img src="anne.png" alt="Foto de Anne"><span class="chip a">&lt;web/&gt;</span><span
+                    class="chip b">SEO + GEO</span><span class="chip c">supabase</span></div>
         </div>
-      </div>
-    </div></section>
-  </main>
-  <footer><div class="wrap"><span>© 2026 Anne Vitória — Estudante de TI</span><span>Feito com HTML, CSS, JavaScript e Supabase</span></div></footer>
-  <script src="app.js"></script>
+        <section>
+            <div class="wrap two">
+                <div class="reveal">
+                    <div class="tag">01 // sobre</div>
+                    <h2>Código, estratégia e <span class="grad">curiosidade</span>.</h2>
+                </div>
+                <div class="reveal">
+                    <p>Gosto de unir tecnologia e estratégia: crio sites completos, com banco de dados e painel próprio,
+                        e estudo como buscadores e IAs interpretam o conteúdo.</p><a class="btn"
+                        href="sobre.html">Conhecer minha história</a>
+                </div>
+            </div>
+        </section>
+        <section class="band">
+            <div class="wrap">
+                <div class="sec-h reveal">
+                    <div class="tag">02 // habilidades</div>
+                    <h2>O que eu faço</h2>
+                    <p>Um conjunto de habilidades que se completam.</p>
+                </div>
+                <div class="cards">
+                    <div class="card reveal">
+                        <div class="ic">💻</div>
+                        <h3>Desenvolvimento web</h3>
+                        <p>HTML, CSS e JavaScript para criar sites rápidos, responsivos e acessíveis.</p>
+                    </div>
+                    <div class="card reveal">
+                        <div class="ic">🗄️</div>
+                        <h3>Banco de dados</h3>
+                        <p>Supabase, SQL e autenticação para sistemas com painel administrativo.</p>
+                    </div>
+                    <div class="card reveal">
+                        <div class="ic">🔎</div>
+                        <h3>SEO</h3>
+                        <p>Estrutura, conteúdo e performance para ser encontrada nos buscadores.</p>
+                    </div>
+                    <div class="card reveal">
+                        <div class="ic">🤖</div>
+                        <h3>GEO</h3>
+                        <p>Otimização para aparecer nas respostas de mecanismos de IA generativa.</p>
+                    </div>
+                    <div class="card reveal">
+                        <div class="ic">🧠</div>
+                        <h3>SEO semântico</h3>
+                        <p>Entidades, contexto e intenção de busca para conteúdos que fazem sentido.</p>
+                    </div>
+                    <div class="card reveal">
+                        <div class="ic">🎨</div>
+                        <h3>Design de interface</h3>
+                        <p>Visual moderno, limpo e consistente, pensado para a experiência de uso.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="wrap">
+                <div class="sec-h reveal">
+                    <div class="tag">03 // projetos</div>
+                    <h2>Projetos em destaque</h2>
+                    <p>Clique em um projeto para ver os detalhes.</p>
+                </div>
+                <div class="pgrid" id="destaques">
+                    <p style="color:var(--mu)">Carregando…</p>
+                </div>
+                <p style="margin-top:28px" class="reveal"><a class="btn" href="projetos.html">Ver todos os projetos</a>
+                </p>
+            </div>
+        </section>
+        <section class="band">
+            <div class="wrap">
+                <div class="sec-h reveal">
+                    <div class="tag">04 // estudos</div>
+                    <h2>Meus estudos</h2>
+                    <p>Temas que pesquiso e aplico no dia a dia.</p>
+                </div>
+                <div class="cards"><a class="card reveal" href="estudos-seo.html">
+                        <div class="ic">🔎</div>
+                        <h3>SEO</h3>
+                        <p>Como os buscadores classificam páginas.</p>
+                    </a><a class="card reveal" href="estudos-semantica.html">
+                        <div class="ic">🧠</div>
+                        <h3>Semântica</h3>
+                        <p>Entidades, contexto e intenção de busca.</p>
+                    </a><a class="card reveal" href="estudos-geo.html">
+                        <div class="ic">🤖</div>
+                        <h3>GEO</h3>
+                        <p>Como ser citada por IAs generativas.</p>
+                    </a></div>
+            </div>
+        </section>
+        <section>
+            <div class="wrap">
+                <div class="sec-h reveal">
+                    <div class="tag">05 // processo</div>
+                    <h2>Como eu trabalho</h2>
+                </div>
+                <div class="cards">
+                    <div class="card step reveal">
+                        <div class="n">01</div>
+                        <h3>Entender</h3>
+                        <p>Converso para entender objetivo, público e prazo.</p>
+                    </div>
+                    <div class="card step reveal">
+                        <div class="n">02</div>
+                        <h3>Planejar</h3>
+                        <p>Defino estrutura, conteúdo e tecnologia.</p>
+                    </div>
+                    <div class="card step reveal">
+                        <div class="n">03</div>
+                        <h3>Construir</h3>
+                        <p>Desenvolvo com código limpo e foco em performance.</p>
+                    </div>
+                    <div class="card step reveal">
+                        <div class="n">04</div>
+                        <h3>Evoluir</h3>
+                        <p>Meço, ajusto e melhoro continuamente.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="band">
+            <div class="wrap">
+                <div class="sec-h reveal">
+                    <div class="tag">06 // números</div>
+                    <h2>Em resumo</h2>
+                </div>
+                <div class="cards">
+                    <div class="card stat reveal"><b class="grad">100%</b><span>Responsivo</span></div>
+                    <div class="card stat reveal"><b class="grad">3</b><span>Áreas de estudo</span></div>
+                    <div class="card stat reveal"><b class="grad">∞</b><span>Curiosidade</span></div>
+                    <div class="card stat reveal"><b class="grad">24h</b><span>Tempo de resposta</span></div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="wrap">
+                <div class="ctaBox reveal">
+                    <div class="tag">07 // contato</div>
+                    <h2>Vamos criar algo <span class="grad">incrível</span> juntos?</h2>
+                    <p>Me conte sobre a sua ideia. Respondo o mais rápido possível.</p><a class="btn pri"
+                        href="contato.html">Enviar mensagem →</a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div class="wrap"><span>© 2026 Anne · Todos os direitos reservados</span><span class="mono">feito com código e
+                café ☕</span></div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+    <script src="script.js"></script>
 </body>
+
 </html>
