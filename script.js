@@ -1,6 +1,6 @@
 // ===== COLE AQUI SEUS DADOS DO SUPABASE (os mesmos que você já usa) =====
 const SUPABASE_URL = "https://khktnihmmjdnjosnqkls.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_G7eu65EA3s8SrP633y1bDQ_0k-FOSJJ";
+const SUPABASE_KEY = "sb_publishable_G7eu65EA3s8SrP633y1bDQ_0k-FOSJJ";
 // =======================================================================
 
 document.documentElement.classList.add("js");
