@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Área restrita</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <header>
     <a class="home" href="index.html">Home</a>
@@ -28,6 +30,7 @@
       <nav class="abas">
         <button data-aba="projects" class="ativa">Projetos</button>
         <button data-aba="leads">Mensagens</button>
+        <button data-aba="tasks">Checklist</button>
       </nav>
 
       <div id="aba-projects">
@@ -60,6 +63,40 @@
           </table>
         </div>
       </div>
+
+      <!-- Nova aba: Checklist / Tasks -->
+      <div id="aba-tasks" hidden>
+        <div style="display:flex; gap:20px; align-items:flex-start; margin-bottom:18px; flex-wrap:wrap;">
+          <div style="flex:1; min-width:260px">
+            <label for="t-title">Título</label>
+            <input id="t-title" placeholder="Ex.: Finalizar projeto X">
+            <label for="t-desc">Descrição</label>
+            <textarea id="t-desc" rows="4" placeholder="Detalhes (opcional)"></textarea>
+            <label for="t-due">Prazo</label>
+            <input id="t-due" type="date">
+            <label for="t-status">Status</label>
+            <select id="t-status">
+              <option value="todo">A fazer</option>
+              <option value="doing">Fazendo</option>
+              <option value="done">Concluído</option>
+            </select>
+            <div style="margin-top:12px">
+              <button id="task-save">Salvar tarefa</button>
+              <button id="task-cancel" class="secundario" hidden>Cancelar</button>
+            </div>
+          </div>
+
+          <div style="flex:1; min-width:320px">
+            <div class="tabela" style="max-height:420px; overflow:auto">
+              <table>
+                <thead><tr><th>Título</th><th>Status</th><th>Prazo</th><th></th></tr></thead>
+                <tbody id="lista-tasks"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </section>
 
     <p id="mensagem" role="status"></p>
@@ -77,15 +114,20 @@
 
     let projetos = [];
     let editandoId = null;
+    let currentUser = null;
 
     // ---------- login ----------
     function mostrar(sessao) {
       $("login").hidden = !!sessao;
       $("painel").hidden = !sessao;
       if (sessao) {
+        currentUser = sessao.user;
         $("usuario").textContent = sessao.user.email;
         carregarProjetos();
         carregarLeads();
+        carregarTasks();
+      } else {
+        currentUser = null;
       }
     }
 
@@ -110,6 +152,7 @@
       document.querySelectorAll(".abas button").forEach((x) => x.classList.toggle("ativa", x === b));
       $("aba-projects").hidden = b.dataset.aba !== "projects";
       $("aba-leads").hidden = b.dataset.aba !== "leads";
+      $("aba-tasks").hidden = b.dataset.aba !== "tasks";
       aviso("");
     }));
 
@@ -195,7 +238,90 @@
       }
     });
 
+    // ---------- tasks (checklist) ----------
+    let tasks = [];
+    let editTaskId = null;
+
+    async function carregarTasks() {
+      const { data, error } = await banco.from("tasks").select("*").order("created_at", { ascending: false });
+      if (error) {
+        return aviso("Erro ao carregar tarefas: " + error.message, true);
+      }
+      tasks = data;
+      $("lista-tasks").innerHTML = data.length
+        ? data.map(t => `<tr>
+            <td>${esc(t.title)}</td>
+            <td>${esc(t.status)}</td>
+            <td>${t.due_date ? new Date(t.due_date).toLocaleDateString("pt-BR") : ""}</td>
+            <td class="acoes">
+              <button class="secundario" data-editar="${t.id}">Editar</button>
+              <button class="secundario" data-excluir="${t.id}">Excluir</button>
+            </td></tr>`).join("")
+        : `<tr><td colspan="4">Nenhuma tarefa ainda.</td></tr>`;
+    }
+
+    $("task-save").addEventListener("click", async () => {
+      const title = $("t-title").value.trim();
+      if (!title) return aviso("Título obrigatório.", true);
+      const desc = $("t-desc").value.trim();
+      const due = $("t-due").value ? new Date($("t-due").value).toISOString() : null;
+      const status = $("t-status").value || "todo";
+
+      if (!currentUser) return aviso("Usuário não autenticado.", true);
+
+      if (editTaskId) {
+        const { data, error } = await banco.from("tasks").update({
+          title, description: desc, due_date: due, status, updated_at: new Date().toISOString()
+        }).eq("id", editTaskId).select();
+        if (error) return aviso("Erro ao atualizar tarefa: " + error.message, true);
+        if (!data.length) return aviso(SEM_PERMISSAO, true);
+        aviso("Tarefa atualizada.");
+        editTaskId = null;
+        $("task-cancel").hidden = true;
+      } else {
+        // inserir com owner = currentUser.id
+        const { data, error } = await banco.from("tasks").insert([{
+          title, description: desc, due_date: due, status, owner: currentUser.id
+        }]).select();
+        if (error) return aviso("Erro ao criar tarefa: " + error.message, true);
+        if (!data.length) return aviso(SEM_PERMISSAO, true);
+        aviso("Tarefa criada.");
+      }
+      $("t-title").value = ""; $("t-desc").value = ""; $("t-due").value = ""; $("t-status").value = "todo";
+      carregarTasks();
+    });
+
+    $("task-cancel").addEventListener("click", () => {
+      editTaskId = null;
+      $("task-cancel").hidden = true;
+      $("t-title").value = ""; $("t-desc").value = ""; $("t-due").value = ""; $("t-status").value = "todo";
+    });
+
+    $("lista-tasks").addEventListener("click", async (e) => {
+      const idEditar = e.target.dataset.editar;
+      const idExcluir = e.target.dataset.excluir;
+      if (idEditar) {
+        const t = tasks.find(x => x.id == idEditar);
+        if (!t) return;
+        editTaskId = t.id;
+        $("t-title").value = t.title; $("t-desc").value = t.description || "";
+        $("t-due").value = t.due_date ? new Date(t.due_date).toISOString().slice(0, 10) : "";
+        $("t-status").value = t.status || "todo";
+        $("task-cancel").hidden = false;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      if (idExcluir && confirm("Excluir esta tarefa?")) {
+        const { data, error } = await banco.from("tasks").delete().eq("id", idExcluir).select();
+        if (error) return aviso("Erro ao excluir tarefa: " + error.message, true);
+        if (!data.length) return aviso(SEM_PERMISSAO, true);
+        aviso("Tarefa excluída.");
+        carregarTasks();
+      }
+    });
+
+    // inicializa estado de sessão
     banco.auth.getSession().then(({ data }) => mostrar(data.session));
   </script>
 </body>
+
 </html>
